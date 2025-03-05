@@ -143,7 +143,7 @@ select top 3 * from Person
 SELECT TOP 3 Age, Name FROM Person ORDER BY Age, Name
 
 
-
+-- 3tund 
 
 
 
