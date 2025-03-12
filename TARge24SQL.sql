@@ -370,4 +370,4 @@ select Name, Gender, Salary, DepartmentName
 from Employees
 left join Department
 on Employees.DepartmentId = Department.Id
-where 
+where Employees.DepartmentId is null
