@@ -321,21 +321,21 @@ drop column City
 
 --- inner join
 -- kuvab neid, kellel on DepartmentName all olemas väärtus
-select Name, Gender, Salary, DepartmentName
+select FirstName, Gender, Salary, DepartmentName
 from Employees
 inner join Department
 on Employees.DepartmentId = Department.Id
 
 -- left join
 -- kuidas saada k]ik andmed Employees tabelist kätte
-select Name, Gender, Salary, DepartmentName
+select FirstName, Gender, Salary, DepartmentName
 from Employees
 left join Department -- võib kasutada ka LEFT OUTER JOIN-i
 on Employees.DepartmentId = Department.Id
 
 -- right join
 -- kuidas saada Deparmtentname alla uus nimetus e antud juhul Other Department
-select Name, Gender, Salary, DepartmentName
+select FirstName, Gender, Salary, DepartmentName
 from Employees
 right join Department
 on Employees.DepartmentId = Department.Id
@@ -348,7 +348,7 @@ full outer join Department
 on Employees.DepartmentId = Department.Id
 
 --- cross join võtab kaks allpool olevat tabelit kokku ja korrutab need omavahel läbi
-select Name, Gender, Salary, DepartmentName
+select FirstName, Gender, Salary, DepartmentName
 from Employees
 cross join Department
 
@@ -384,7 +384,7 @@ where Employees.DepartmentId is null
 
 --full join
 --mõlema tabeli mitte-kattuvate väärtustega read kuvab välja
-select Name, Gender, Salary, DepartmentName
+select FirstName, Gender, Salary, DepartmentName
 from Employees
 full join Department
 on Employees.DepartmentId = Department.Id
@@ -645,5 +645,66 @@ end
 declare @FirstName nvarchar(20)
 execute spGetNameById1 1, @FirstName output
 print 'Name of the Employee = ' + @FirstName
+
+
+declare
+@FirstName nvarchar(20)
+execute spGetNameById1 1, @FirstName out
+print 'Name = ' + @FirstName
+
+
+create proc spGetNameById2
+@Id int
+as begin
+	return (select FirstName from Employees where Id = @Id)
+end
+
+--tuleb veateade kuna kutsusime välja int-i, aga Tom on string
+declare @EmployeeName nvarchar(50)
+execute @EmployeeName = spGetNameById2 1
+print 'Name of the employee = ' + @EmployeeName
+
+
+--sisseehitatud sting funktsioonid
+--see konverteerib ASCII täheväärtuse nubriks
+select ASCII('a')
+--kuvab A-tähe numbrina 97 ehk annab tähele A-le numbrilise väärtuse
+select char(65)
+
+---prindime kogu tähestiku välja
+declare @Start int
+set @Start = 97
+while (@Start <= 122)
+begin 
+	select char (@Start)
+	set @Start = @Start + 1
+end
+
+--eemaldame tühjad kohad sulgudes vasakult poolt ehk "lefttrim"
+select ltrim('            Hello')
+
+select * from Employees
+
+--tühikute eemaldamine veerust
+select ltrim(FirstName) as [First Name], MiddleName, LastName from Employees 
+
+select * from Employees
+
+--eemaldame tühjad kohad sulgudes peramlt poolt ehk "righttrim"
+select rtrim('   Hello    --                ')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

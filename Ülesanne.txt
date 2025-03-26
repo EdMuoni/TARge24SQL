@@ -1,0 +1,15 @@
+Teemad: stored procedure, ascii, while, ltrim ja rtrim
+ 
+Teise tunni ajal alustasime hindelise tööga:
+Minge lingile: https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms
+Laadige alla andmebaas nimega: AdventureWorksLT2019
+Lugege lehel olev õpetus läbi ja laadige see serverisse.
+Kooliarvuti kasutajad sisestavad serveri nimeks: (localdb)\MSSQLLocalDB
+Tehke igaühega üks päring olemasolevate tabelite vahel: left join, right join, inner join, outer join ja cross join
+Ühes right join päringus peab kasutama order by-d.
+Ühes left join päringus peab kasutama group by-d
+Seletage iga päringu omapära.
+NB! JOIN päringuid ei tee lisatud tabeliga.
+Lisada üks tabel ja kümme rida andmeid. Kindlasti peab olema kuus muutujat.
+Töö tuleb esitada selliselt, et salvestate koodi osa tekstina ja siis kohe
+pilt tulemusest.
