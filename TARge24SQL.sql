@@ -693,16 +693,209 @@ select * from Employees
 --eemaldame tühjad kohad sulgudes peramlt poolt ehk "righttrim"
 select rtrim('   Hello    --                ')
 
+--6 tund 02.04.2025
+
+--keerab selle kooloni sees olevad andmed vastupidiseks
+--vastavalt upper ja lower-iga saan muuta märkide suurust
+--reverse funktsioon pöörab kõik ümber
+select REVERSE(upper(ltrim(FirstName))) as [First Name], MiddleName, lower(LastName) as LastName,
+rtrim(ltrim(FirstName)) + ' ' + MiddleName + ' ' + LastName as FullName
+from Employees
+
+--näitab, et mitu tähte on sõnal ja loeb tühikuid sisse
+select FirstName, len(FirstName) as [Total characters] from Employees
+--eemaldamae tühikuid ja ei loe sisse
+--select ltrim(FirstName) as [First Name] from Employees
+
+select FirstName, len(ltrim(FirstName)) as [Total characters] from Employees
+
+select * from Employees
+
+--left, right ja substring
+--vasakult poolt neli esimest tähte
+select left('ABCDEF', 4)
+--paremalt poolt kolm tähte
+select right('ABCDEF', 3)
+
+--kuvab @-tähemärgi asetust
+select charindex('@', 'sara@aaa.com')
+
+--esimine number peale komakohta näitab, mimendast alustab 
+--ja siis mitu nr peale seda kuvada
+select substring('pam@bbb.com', 5, 2)
+
+-- @-märgist kuvab kolm tähemärki. Viimase numbriga saab määrata pikkust
+select substring('pam@bbb.com', CHARINDEX('@', 'pam@bbb.com') + 1, 3)
+
+--peale @-märki reguleerib tähemärkide pikkuse näitamist
+select substring('pam@bbb.com', CHARINDEX('@', 'pam@bbb.com') + 1, 
+len('pam@bbb.com') - charindex('@', 'pam@bbb.com'))
+
+--tahame teada saada domeeninimed emailides
+select substring(Email, charindex('@', Email) + 1,
+len(Email) - charindex('@', Email)) as EmailDomain
+from Employees
+
+alter table Employees
+add Email nvarchar(20)
+
+select * from Employees
+
+update Employees set Email = 'Tom@aaa.com' where Id = 1;
+
+update Employees set Email = 'Pam@bbb.com' where Id = 2;
+
+update Employeesset Email = 'John@aaa.com' where Id = 3;
+
+update Employees set Email = 'Sam@bbb.com' where Id = 4;
+
+update Employees
+set Email = 'Todd@bbb.com' 
+where Id = 5;
+
+update Employees
+set Email = 'Ben@ccc.com' 
+where Id = 6;
+
+update Employees
+set Email = 'Sara@ccc.com' 
+where Id = 7;
+
+update Employees set Email = 'Valerie@aaa.com' where Id = 8;
+
+update Employees
+set Email = 'James@bbb.com' 
+where Id = 9;
+
+update Employees set Email = 'Russel@bbb.com' where Id = 10;
+
+--lisame *-märgi alates teatud kohast
+select FirstName, LastName,
+	substring(Email, 1, 2) + REPLICATE('*', 5) + --peale teist tähemärki paneb viis tärni
+	SUBSTRING(Email, CHARINDEX('@', Email), len(Email) - charindex('@', Email)+ 1) as Email -- kuni @-märgini on dünaamiline
+from Employees
+
+--kolm korda näitab stringis olevat väärtust
+select replicate('asd', 3)
+
+--kuidas sisestada tühikut kahe nime vahele
+select space(5)
+--tühikute arv kahe nime vahel
+select FirstName + space(20) + LastName as FullName
+from Employees
+
+--PATINDEX
+--sama, mis charindex, aga dünaamilisem ja saab kasutada WILDCARD-i
+select Email, PATINDEX('%@aaa.com', Email) as FirstOccurence
+from Employees
+where PATINDEX('%@aaa.com', Email) > 0 --leian kõik selle domeeni esindajad ja
+-- alataes mitmendast märgist algab @
+
+--kõik .com-d asendatakse .net-ga
+SELECT Email, 
+       CASE 
+           WHEN Email LIKE '%@aaa.com' THEN REPLACE(Email, '@aaa.com', '@aaa.net')
+           WHEN Email LIKE '%@bbb.com' THEN REPLACE(Email, '@bbb.com', '@bbb.net')
+           WHEN Email LIKE '%@ccc.com' THEN REPLACE(Email, '@ccc.com', '@ccc.net')
+           ELSE Email 
+       END AS UpdatedEmail
+FROM Employees;
+
+--See asendab kõik kolm domeeni korraga ilma CASE-ita.
+SELECT Email, 
+       REPLACE(REPLACE(REPLACE(Email, '@aaa.com', '@aaa.net'), 
+                       '@bbb.com', '@bbb.net'),
+                       '@ccc.com', '@ccc.net') AS UpdatedEmail
+FROM Employees;
+
+--õpetaj poolne variant
+select Email, REPLACE(Email, '.com', '.net') as ConvertEmail
+from Employees
+
+--soovin asendada peale esimest märki kolm tähte viie tärniga
+--peate kasutama stuff-i
+SELECT STUFF(Email, 2, 3, '*****') as UpdatedEmail
+from Employees;
+
+--õpetaja variant
+select FirstName, LastName, Email,
+	stuff(Email, 2, 3, '*****') as StuffedEmail
+from Employees
+
+--ajaühikute tabel
+create table DateTime
+(
+c_time time,
+c_date date,
+c_smalldatetime smalldatetime,
+c_datetitme datetime,
+c_datetitme2 datetime2,
+c_datetimeoffset datetimeoffset
+)
+
+select * from DateTime
+
+--konkreetse masina kellaaeg
+select GETDATE(), 'GETDATE()'
+
+insert into DateTime
+values (getdate(), getdate(), getdate(), getdate(), getdate(), getdate())
+
+--muudame tabeli andmeid
+update DateTime set c_datetimeoffset = '2025-04-02 14:08:41.3566667 +10:00'
+where c_datetimeoffset = '2025-04-02 14:08:41.3566667 +00:00'
+
+select CURRENT_TIMESTAMP, ' CURRENT_TIMESTAMP' --aja päring
+-- leida veel kolm aja päringut
+--Leia praegune kuupäev ja kellaaeg
+SELECT GETDATE() AS CurrentDateTime, CURRENT_TIMESTAMP AS CurrentTimeStamp;
+--mitu päeva on möödunud teatud kuupäevast
+SELECT DATEDIFF(DAY, '2024-01-01', GETDATE()) AS DaysSinceNewYear;
+-- leia järgmise kuu esimene päev
+SELECT DATEADD(DAY, 1, EOMONTH(GETDATE())) AS FirstDayNextMonth;
+
+--õpetaja poolt pakutud variandid aja päringu kohta
+select SYSDATETIME(), 'SYSDATETIME' -natuke täpsem aja päring
+select SYSDATETIMEOFFSET(), 'SYSDATETIMEOFFSET' --täpne aeg koos ajalise nihkega UTC suhtes
+select GETUTCDATE(), 'GETUTCDATE' --utc aeg
+
+--
+select isdate('asd') -- tagastab 0 kuna string ei ole date
+
+select isdate(GETDATE()) --tagastab 1-te kuna see on aeg
+
+select ISDATE('2025-04-02 14:08:41.3566667') --tagastab 0 kuna max 3 numbrit peale koma tohib olla
+select ISDATE('2025-04-02 14:08:41.356') -- tagastab 1
+select day(getdate())-- annab tänase päeva numbri
+select day('01/31/2025') -- annab stringis oleva kuupäeva ja järjestus peab olema õige
+select month(getdate()) -- annab jooksva kuu arvu
+select month('01/31/2025') -- annab stringis oleva kuu arvu
+select year(getdate()) -- annab jooksva aata arvu
+select year('01/31/2025') -- annab stringis oleva aasta arvu
+
+create table EmployeesWithDates
+(
+	Id nvarchar(2),
+	Name nvarchar(20),
+	DateOfBirth datetime
+)
+
+insert into EmployeesWithDates (Id, Name, DateOfBirth)
+values (1, 'Sam', '1980-12-30 00:00:00.000');
+insert into EmployeesWithDates (Id, Name, DateOfBirth)
+values (2, 'Pam', '1982-09-01 12:02:36.260');
+insert into EmployeesWithDates (Id, Name, DateOfBirth)
+values (3, 'John', '1985-08-22 12:03:30.370');
+insert into EmployeesWithDates (Id, Name, DateOfBirth)
+values (4, 'Sara', '1979-11-29 12:59:30.670');
 
 
-
-
-
-
-
-
-
-
+--kuidas võta ühest veerust andmeid ja selle abil luua uued veerud
+select Name, DateOfBirth, DateName(weekday, DateOfBirth) as [day], --võtab veerust päeva andmeid ja kuvab päeva nimetuse sõnana
+	MONTH(DateOfBirth) as MonthNumber, --võtab veerust kuupäevad ja kuvab kuu nr
+	DATENAME(Month, DateOfBirth) as [MonthName], --võtab veerust kuu andmeid ja kuvab kuu nimetuse sõnana
+	Year(DateOfBirth) as [Year] -- võtab DOB veerust aasta
+from EmployeesWithDates
 
 
 
